@@ -4,7 +4,9 @@
 
 ## Nanopolish mRNA-1273
 
-This is the version of Nanopolish containing subprogram nanopolish polya-moderna for identification of m&#936;Cm&#936;AG pentamer at the 3'end of mRNA-1273 vaccine poly(A) tail.
+This is the version of Nanopolish containing subprogram nanopolish polya-moderna for identification of m&#936;Cm&#936;AG pentamer at the 3'end of mRNA-1273 vaccine poly(A) tail (see the picture below for example). This code was used for the identification of pentamer containing mRNA-1273 reads, described in our [recent preprint](https://www.biorxiv.org/content/10.1101/2022.12.01.518149v1).
+
+![representative raw signal from mRNA-1273 direct RNA sequencing](mrna-1273_raw_currents.png)
 
 m&#936;Cm&#936;AG emissions were modelled with Mixture Gaussian, using manually selected reads from direct RNA sequencing run of mRNA-1273.  
 
