@@ -2,6 +2,21 @@
 
 [![Build Status](https://travis-ci.org/jts/nanopolish.svg?branch=master)](https://travis-ci.org/jts/nanopolish)
 
+## Nanopolish mRNA-1273
+
+This is the version of Nanopolish containing subprogram nanopolish polya-moderna for identification of m&#936;Cm&#936;AG pentamer at the 3'end of mRNA-1273 vaccine poly(A) tail.
+
+m&#936;Cm&#936;AG emissions were modelled with Mixture Gaussian, using manually selected reads from direct RNA sequencing run of mRNA-1273.  
+
+As a result of nanopolish polya-moderna additional columns appear in the output:
+* mod_start - where m&#936;Cm&#936;AG starts in a signal
+* sum_length - sum of poly(A) + CUAG length
+* mod_length - calculated m&#936;Cm&#936;AG length (inprecise)
+* mod_qc_tag - either "CUAG" (pentamer was found), "TOOSHORT" (signal perutbation detected at the end of 3'end but too short - possible artifact), or "NONE" - no penamter detected
+
+
+## Nanopolish
+
 Software package for signal-level analysis of Oxford Nanopore sequencing data. Nanopolish can calculate an improved consensus sequence for a draft genome assembly, detect base modifications, call SNPs and indels with respect to a reference genome and more (see Nanopolish modules, below).
 
 ## Release notes
@@ -100,7 +115,7 @@ nanopolish index -d /path/to/raw_fast5s/ -s sequencing_summary.txt basecalled_ou
 nanopolish index basecalled_output.fastq --slow5 signals.blow5 # for SLOW5 input
 ```
 
-The `-s` option tells nanopolish to read the `sequencing_summary.txt` file from Albacore to speed up indexing. Without this option `nanopolish index` is extremely slow as it needs to read every fast5 file individually. If you basecalled your run in parallel, so you have multiple `sequencing_summary.txt` files, you can use the `-f` option to pass in a file containing the paths to the sequencing summary files (one per line). When using SLOW5 files as the input (FAST5 can be converted to SLOW5 using [slow5tools](https://github.com/hasindu2008/slow5tools)), `-s` option is not required and does not affect indexing performance. 
+The `-s` option tells nanopolish to read the `sequencing_summary.txt` file from Albacore to speed up indexing. Without this option `nanopolish index` is extremely slow as it needs to read every fast5 file individually. If you basecalled your run in parallel, so you have multiple `sequencing_summary.txt` files, you can use the `-f` option to pass in a file containing the paths to the sequencing summary files (one per line). When using SLOW5 files as the input (FAST5 can be converted to SLOW5 using [slow5tools](https://github.com/hasindu2008/slow5tools)), `-s` option is not required and does not affect indexing performance.
 
 ### Computing a new consensus sequence for a draft assembly
 
