@@ -18,6 +18,7 @@
 #include "nanopolish_phase_reads.h"
 #include "nanopolish_vcf2fasta.h"
 #include "nanopolish_polya_estimator.h"
+#include "nanopolish_polya_estimator_Moderna.h"
 #include "nanopolish_fast5_check.h"
 #include "nanopolish_detect_polyi.h"
 #include "nanopolish_train_poremodel_from_basecalls.h"
@@ -37,6 +38,7 @@ static std::map< std::string, std::function<int(int, char**)> > programs = {
     {"phase-reads", phase_reads_main},
     {"vcf2fasta",   vcf2fasta_main},
     {"polya",  polya_main},
+    {"polya-moderna",  polya_Moderna_main} ,
     {"detect-polyi", detect_polyi_main} ,
     {"fast5-check",  fast5_check_main},
     {"call-methylation",  call_methylation_main}
@@ -77,7 +79,7 @@ int main(int argc, char** argv)
     } else {
         std::string command(argv[1]);
         auto iter = programs.find(command);
-        if (iter != programs.end()) 
+        if (iter != programs.end())
             ret = iter->second( argc - 1, argv + 1);
         else
             ret = print_usage( argc - 1, argv + 1);
@@ -92,7 +94,7 @@ int main(int argc, char** argv)
     extern int g_failed_alignment_reads;
     extern int g_bad_fast5_file;
     if(g_total_reads > 0) {
-        fprintf(stderr, "[post-run summary] total reads: %d, unparseable: %d, qc fail: %d, could not calibrate: %d, no alignment: %d, bad fast5: %d\n", 
+        fprintf(stderr, "[post-run summary] total reads: %d, unparseable: %d, qc fail: %d, could not calibrate: %d, no alignment: %d, bad fast5: %d\n",
             g_total_reads, g_unparseable_reads, g_qc_fail_reads, g_failed_calibration_reads, g_failed_alignment_reads, g_bad_fast5_file);
     }
     return ret;
