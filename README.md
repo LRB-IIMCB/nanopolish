@@ -2,19 +2,32 @@
 
 [![Build Status](https://travis-ci.org/jts/nanopolish.svg?branch=master)](https://travis-ci.org/jts/nanopolish)
 
-## Nanopolish mRNA-1273
+## Nanopolish for mRNA-1273 and BNT162b2 (segmented poly(A)
 
-This is the version of Nanopolish containing subprogram nanopolish polya-moderna for identification of m&#936;Cm&#936;AG pentamer at the 3'end of mRNA-1273 vaccine poly(A) tail (see the picture below for example). This code was used for the identification of pentamer containing mRNA-1273 reads, described in our [recent preprint](https://www.biorxiv.org/content/10.1101/2022.12.01.518149v1).
+This is the version of Nanopolish containing additional subprograms:
+1. nanopolish polya-moderna for identification of m&#936;Cm&#936;AG pentamer at the 3'end of mRNA-1273 vaccine poly(A) tail (see the picture below for example)
+2. nanopolish polya-pfizer for proper segmentation of composite poly(A) tails (like in the BNT162b2 mRNA vaccine). 
+
+This code was used for the identification of pentamer containing mRNA-1273 reads, described in our [recent preprint](https://www.biorxiv.org/content/10.1101/2022.12.01.518149v1).
 
 ![representative raw signal from mRNA-1273 direct RNA sequencing](mrna-1273_raw_currents.png)
 
-m&#936;Cm&#936;AG emissions were modelled with Mixture Gaussian, using manually selected reads from direct RNA sequencing run of mRNA-1273.  
+m&#936;Cm&#936;AG emissions were modelled with Mixture Gaussian, using manually selected reads from direct RNA sequencing run of mRNA-1273 or BNT162b2.  
+
+### nanopolish polya-moderna
 
 As a result of nanopolish polya-moderna additional columns appear in the output:
 * mod_start - where m&#936;Cm&#936;AG starts in a signal
 * sum_length - sum of poly(A) + CUAG length
 * mod_length - calculated m&#936;Cm&#936;AG length (inprecise)
 * mod_qc_tag - either "CUAG" (pentamer was found), "TOOSHORT" (signal perutbation detected at the end of 3'end but too short - possible artifact), or "NONE" - no penamter detected
+
+### nanopolish polya-pfizer
+
+As a result of nanopolish polya-pfizer additional columns appear in the output:
+* polya1_length - length of first poly(A) segment
+* linker_length - length of poly(A) linker
+* polya2_length - length of second poly(A) segment
 
 
 ## Nanopolish
