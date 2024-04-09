@@ -1,34 +1,90 @@
 # Nanopolish
 
-[![Build Status](https://travis-ci.org/jts/nanopolish.svg?branch=master)](https://travis-ci.org/jts/nanopolish)
 
-## Nanopolish for mRNA-1273 and BNT162b2 (segmented poly(A)
+# Nanopolish for mRNA-1273 and BNT162b2 (segmented poly(A)
 
 This is the version of Nanopolish containing additional subprograms:
 1. nanopolish polya-moderna for identification of m&#936;Cm&#936;AG pentamer at the 3'end of mRNA-1273 vaccine poly(A) tail (see the picture below for example)
 2. nanopolish polya-pfizer for proper segmentation of composite poly(A) tails (like in the BNT162b2 mRNA vaccine). 
 
-This code was used for the identification of pentamer containing mRNA-1273 reads, described in our [recent preprint](https://www.biorxiv.org/content/10.1101/2022.12.01.518149v1).
+This code was used for the identification of pentamer containing mRNA-1273 reads, described in our [recent preprint](https://www.biorxiv.org/content/10.1101/2022.12.01.518149v1) and analysis of poly(A) tails in BNT162b2 vaccine (manuscript in revision).
 
 ![representative raw signal from mRNA-1273 direct RNA sequencing](mrna-1273_raw_currents.png)
 
+![representative raw signal from BNT162b2 direct RNA sequencing](BNT162b2_raw_current.png)
+
 m&#936;Cm&#936;AG emissions were modelled with Mixture Gaussian, using manually selected reads from direct RNA sequencing run of mRNA-1273 or BNT162b2.  
 
-### nanopolish polya-moderna
+## Installation 
 
-As a result of nanopolish polya-moderna additional columns appear in the output:
-* mod_start - where m&#936;Cm&#936;AG starts in a signal
+Modified nanopolish can be installed in the same way as original nanopolish software (please see below for instructions). After succesfull compliation new subprograms will appear: polya-moderna and polya-pfizer. 
+
+## nanopolish polya-moderna
+
+Usage will be demonstrated based on the test data located in [mRNA-1273_BNT162b2_test_data/mRNA-1273/](mRNA-1273_BNT162b2_test_data/mRNA-1273/).
+
+Data were basecalled using Guppy 6.0.0, with the following command:
+```bash
+guppy_basecaller -i raw/ -s guppy/ -x cuda:0 --flowcell FLO-MIN106 --kit SQK-RNA002 --recursive --records_per_fastq 0 --trim_strategy none --reverse_sequence on --u_substitution on --fast5_out --disable_pings --disable_qscore_filtering
+```
+
+1. Index fast5 files using nanopolish index:
+    ```bash
+    nanopolish index -d guppy/workspace/ -s guppy/sequencing_summary.txt guppy/fastq_runid_8b7a566cce7dbf659ba14e2b8662fa6a8331a9f6_0_0.fastq
+    ```
+2. Map sequnces to the reference using [minimap2](https://github.com/lh3/minimap2) and samtools (for sorted output)
+    ```
+    minimap2 -ax map-ont -t 10 --secondary=no mRNA-1273.fasta guppy/fastq_runid_8b7a566cce7dbf659ba14e2b8662fa6a8331a9f6_0_0.fastq | samtools view -b | samtools sort -o mapping/mRNA-1273_mapping_sorted.bam
+    samtools index mapping/mRNA-1273_mapping_sorted.bam
+    ```
+3. Run nanopolish polya-moderna
+    ```
+    nanopolish polya-moderna -r guppy/fastq_runid_8b7a566cce7dbf659ba14e2b8662fa6a8331a9f6_0_0.fastq -b mapping/mRNA-1273_mapping_sorted.bam -g mRNA-1273.fasta -t 10 > nanopolish_moderna_out.tsv
+    #[post-run summary] total reads: 7994, unparseable: 0, qc fail: 253, could not calibrate: 576, no alignment: 28, bad fast5: 5
+    ```
+
+As a result of nanopolish polya-moderna additional columns appear in the output [nanopolish_moderna_out.tsv](mRNA-1273_BNT162b2_test_data/mRNA-1273/nanopolish_moderna_out.tsv):
+
+* mod_start - where m&#936;Cm&#936;AG starts in a raw signal
 * sum_length - sum of poly(A) + CUAG length
 * mod_length - calculated m&#936;Cm&#936;AG length (inprecise)
 * mod_qc_tag - either "CUAG" (pentamer was found), "TOOSHORT" (signal perutbation detected at the end of 3'end but too short - possible artifact), or "NONE" - no penamter detected
 
-### nanopolish polya-pfizer
+## nanopolish polya-pfizer
 
-As a result of nanopolish polya-pfizer additional columns appear in the output:
+Nanopolish polya-pfizer can be run exacly the same as nanopolish polya-moderna (above), but reads should be mapped to BNT162b2 reference. Usage will be demonstrated based on the test data located in [mRNA-1273_BNT162b2_test_data/BNT162b2/](mRNA-1273_BNT162b2_test_data/BNT162b2/).
+
+Data were basecalled the same as above, using Guppy 6.0.0, with the following command:
+```bash
+guppy_basecaller -i raw/ -s guppy/ -x cuda:0 --flowcell FLO-MIN106 --kit SQK-RNA002 --recursive --records_per_fastq 0 --trim_strategy none --reverse_sequence on --u_substitution on --fast5_out --disable_pings --disable_qscore_filtering
+```
+
+1. Index fast5 files using nanopolish index:
+    ```bash
+    nanopolish index -d guppy/workspace/ -s guppy/sequencing_summary.txt guppy/fastq_runid_a41505424a2e29d098edda769568b7bcc2ea1419_0_0.fastq
+    ```
+2. Map sequnces to the reference using [minimap2](https://github.com/lh3/minimap2) and samtools (for sorted output)
+    ```
+    minimap2 -ax map-ont -t 10 --secondary=no BNT162b2.fasta guppy/fastq_runid_a41505424a2e29d098edda769568b7bcc2ea1419_0_0.fastq | samtools view -b | samtools sort -o mapping/BNT162b2_mapping_sorted.bam
+    samtools index mapping/BNT162b2_mapping_sorted.bam 
+    ```
+3. Run nanopolish polya-moderna
+    ```
+    nanopolish polya-pfizer -r guppy/fastq_runid_a41505424a2e29d098edda769568b7bcc2ea1419_0_0.fastq -b mapping/BNT162b2_mapping_sorted.bam -g BNT162b2.fasta -t 10 > nanopolish_pfizer_out.tsv
+    #[post-run summary] total reads: 1998, unparseable: 0, qc fail: 30, could not calibrate: 24, no alignment: 4, bad fast5: 0
+    ```
+
+As a result of nanopolish polya-pfizer additional columns appear in the output [nanopolish_pfizer_out.tsv](mRNA-1273_BNT162b2_test_data/BNT162b2/nanopolish_pfizer_out.tsv):
+* linker_start - position of start of the linker in a raw signal
+* poly2_start - position of start of the second poly(A) segment in a raw signal
 * polya1_length - length of first poly(A) segment
-* linker_length - length of poly(A) linker
 * polya2_length - length of second poly(A) segment
+* linker_length - length of poly(A) linker
 
+
+---
+Original nanopolish README below
+---
 
 ## Nanopolish
 
