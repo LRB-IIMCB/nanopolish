@@ -40,7 +40,7 @@ guppy_basecaller -i raw/ -s guppy/ -x cuda:0 --flowcell FLO-MIN106 --kit SQK-RNA
 3. Run nanopolish polya-moderna
     ```
     nanopolish polya-moderna -r guppy/fastq_runid_8b7a566cce7dbf659ba14e2b8662fa6a8331a9f6_0_0.fastq -b mapping/mRNA-1273_mapping_sorted.bam -g mRNA-1273.fasta -t 10 > nanopolish_moderna_out.tsv
-    #[post-run summary] total reads: 7994, unparseable: 0, qc fail: 253, could not calibrate: 576, no alignment: 28, bad fast5: 5
+    #[post-run summary] total reads: 1000, unparseable: 0, qc fail: 39, could not calibrate: 72, no alignment: 2, bad fast5: 0 
     ```
 
 As a result of nanopolish polya-moderna additional columns appear in the output [nanopolish_moderna_out.tsv](mRNA-1273_BNT162b2_test_data/mRNA-1273/nanopolish_moderna_out.tsv):
@@ -68,10 +68,10 @@ guppy_basecaller -i raw/ -s guppy/ -x cuda:0 --flowcell FLO-MIN106 --kit SQK-RNA
     minimap2 -ax map-ont -t 10 --secondary=no BNT162b2.fasta guppy/fastq_runid_a41505424a2e29d098edda769568b7bcc2ea1419_0_0.fastq | samtools view -b | samtools sort -o mapping/BNT162b2_mapping_sorted.bam
     samtools index mapping/BNT162b2_mapping_sorted.bam 
     ```
-3. Run nanopolish polya-moderna
+3. Run nanopolish polya-pfizer
     ```
-    nanopolish polya-pfizer -r guppy/fastq_runid_a41505424a2e29d098edda769568b7bcc2ea1419_0_0.fastq -b mapping/BNT162b2_mapping_sorted.bam -g BNT162b2.fasta -t 10 > nanopolish_pfizer_out.tsv
-    #[post-run summary] total reads: 1998, unparseable: 0, qc fail: 30, could not calibrate: 24, no alignment: 4, bad fast5: 0
+    nanopolish polya-pfizer -r guppy/fastq_runid_a41505424a2e29d098edda769568b7bcc2ea1419_0_0.fastq -b mapping/BNT162b2_mapping_sorted.bam -g BNT162b2.fasta -t 10 > nanopolish_pfizer_out.tsv 
+    #[post-run summary] total reads: 1000, unparseable: 0, qc fail: 20, could not calibrate: 14, no alignment: 0, bad fast5: 0
     ```
 
 As a result of nanopolish polya-pfizer additional columns appear in the output [nanopolish_pfizer_out.tsv](mRNA-1273_BNT162b2_test_data/BNT162b2/nanopolish_pfizer_out.tsv):
